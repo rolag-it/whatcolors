@@ -30,6 +30,9 @@ public final class Constants {
 	
 	private Constants(){}
 	
+	
+	public static final String LOG_TAG = "[WhatColors]";
+	
 	/**
 	 * Chiave per ottenere le {@link SharedPreferences}
 	 */

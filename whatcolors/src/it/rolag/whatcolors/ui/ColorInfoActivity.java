@@ -127,6 +127,7 @@ public class ColorInfoActivity extends Activity {
 	 * 
 	 * @author Rocco Lagrotteria	
 	 */
+	@SuppressLint("NewApi")
 	public void renderList(ColorInfoAdapter colorInfoAdapter) {			
 		ListView lstResult = (ListView) findViewById(R.id.lstResult);		
 		
@@ -254,7 +255,7 @@ public class ColorInfoActivity extends Activity {
 				
 			} catch (Exception exception) {
 				error = Boolean.TRUE;
-				Log.wtf("[Color MASH]", "Errore elaborazione file ", exception);
+				Log.wtf(Constants.LOG_TAG, "Errore elaborazione file ", exception);
 			}
 			return error;
 		}
@@ -321,7 +322,11 @@ public class ColorInfoActivity extends Activity {
 			 */
 			for (int y = 0; y<imageHeight; y++){
 				for (int x = 0; x < imageWidth; x++) {
-					String colorKey = "#" + Integer.toHexString(imageReaded.getPixel(x, y)).substring(2);
+					String colorKey = Integer.toHexString(imageReaded.getPixel(x, y));
+					while (colorKey.length()<8) {
+						colorKey = "0"+colorKey;
+					}
+					colorKey = "#" + colorKey.substring(2);
 					if (colorsCount.containsKey(colorKey)) {
 						Integer tot = colorsCount.get(colorKey);
 						colorsCount.put(colorKey, ++tot);
