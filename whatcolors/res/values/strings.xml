@@ -33,10 +33,10 @@
 	<string name="menu_favadd">Add to favorites</string>
 	<string name="menu_favlst">Favorites</string>
 	<string name="menu_favdel">Delete</string>
-	<string name="menu_favmash">Mash!</string>
+	<string name="menu_favblend">Blend</string>
 	<string name="menu_favtitle">%s selected</string>
 	<string name="menu_restitle">%s selected</string>
-	<string name="menu_resmash">Mash!</string>
+	<string name="menu_resblend">Blend</string>
 	<string name="favadd_msg">Color %s added to favorites list</string>	
 	<string name="favempty_msg">Favorites list is empty</string>	
 	<string name="clip_entry">Selected color by Color Mash</string>

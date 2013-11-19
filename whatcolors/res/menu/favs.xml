@@ -28,8 +28,8 @@
     <item android:id="@+id/menuFavoritesMash"
         android:orderInCategory="1" 
         android:showAsAction="ifRoom"
-        android:title="@string/menu_favmash"
-        android:icon="@drawable/ic_menu_mash" />
+        android:title="@string/menu_favblend"
+        android:icon="@drawable/ic_menu_blend" />
    
     
 </menu>
