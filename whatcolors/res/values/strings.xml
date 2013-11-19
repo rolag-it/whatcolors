@@ -39,12 +39,12 @@
 	<string name="menu_resblend">Blend</string>
 	<string name="favadd_msg">Color %s added to favorites list</string>	
 	<string name="favempty_msg">Favorites list is empty</string>	
-	<string name="clip_entry">Selected color by Color Mash</string>
+	<string name="clip_entry">Selected color by WhatColors</string>
 	<string name="clip_entry_msg">Color code %s copied into clipboard</string>
-	<string name="share_msg">I like the color having hex-code %s, found using Color Mash</string>
+	<string name="share_msg">I like the color having hex-code %s, found using WhatColors</string>
 	
 	<string name="pref_precision">Precision</string>
-	<string name="pref_precision_info">Set image scanning accurancy</string>
+	<string name="pref_precision_info">higher level increases the number of pixel and thus the ability to seize details</string>
 	<string-array name="precision_scale_label">
 	    <item>Fast</item>
 	    <item>Standard</item>
@@ -59,7 +59,7 @@
 	</string-array>
 	
 	<string name="pref_fidelity">Fidelity</string>
-	<string name="pref_fidelity_info">Set color matching accurancy</string>
+	<string name="pref_fidelity_info">higher level increases the number of colors detected when scanning the image</string>
 	<string-array name="fidelity_scale_label">
 	    <item>Fast</item>
 	    <item>Standard</item>

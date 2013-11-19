@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WhatColors</string>
+    <string name="app_settings">Impostazioni</string>
+    <string name="type_missmatch">Impossibile gestire i dati ricevuti</string>
+    <string name="scan_result">Colori trovati</string>
+    <string name="scan_message">Scansione in corso…</string>
+    <string name="scan_error">Errore scansione immagine</string>
+    <string name="action_camera">Scatta una foto</string>
+    <string name="action_gallery">Scegli dalla Galleria</string>
+    <string name="color_default">#FFFFFF</string>
+    <string name="color_mist">ALTRI</string>
+    <string name="menu_pref">Impostazioni</string>
+    <string name="menu_share">Condividi</string>
+    <string name="menu_favadd">Aggiungi ai preferiti</string>
+    <string name="menu_favlst">Preferiti</string>
+    <string name="menu_favdel">Cancella</string>
+    <string name="menu_favmash">Combina</string>
+    <string name="menu_favtitle">%s selezionato</string>
+    <string name="menu_restitle">%s selezionato</string>
+    <string name="menu_resmash">Combina</string>
+    <string name="favadd_msg">Colore %s aggiunto alla lista dei preferiti </string>
+    <string name="favempty_msg">La lista dei preferiti è vuota</string>
+    <string name="clip_entry">Colore trovato con WhatColors</string>
+    <string name="clip_entry_msg">Codice colore %s copiato negli appunti</string>
+    <string name="share_msg">Mi piace il colore con hex-code %s, trovato con WhatColors</string>
+    <string name="pref_precision">Precisione</string>
+    <string name="pref_precision_info">un livello maggiore aumenta la quantit&#224; di pixel elaborati con la possibilit&#224; di cogliere pi&#249; dettagli</string>
+
+    <string-array name="precision_scale_label">
+        <item>Veloce</item>
+        <item>Standard</item>
+        <item>Alta</item>
+        <item>Ultra</item>
+    </string-array>
+    <string-array name="precision_scale_value">
+        <item>64</item>
+        <item>32</item>
+        <item>16</item>
+        <item>4</item>
+    </string-array>
+
+    <string name="pref_fidelity">Fedelt&#224;</string>
+    <string name="pref_fidelity_info">un livello maggiore aumenta il numero di colori rilevati dalla scansione dell\'immagine </string>
+
+    <string-array name="fidelity_scale_label">
+        <item>Veloce</item>
+        <item>Standard</item>
+        <item>Alta</item>
+        <item>Ultra</item>
+    </string-array>
+    <string-array name="fidelity_scale_value">
+        <item>72</item>
+        <item>56</item>
+        <item>32</item>
+        <item>16</item>
+    </string-array>
+
+    <string name="default_precision">32</string>
+    <string name="default_fidelity">56</string>
+
+</resources>
