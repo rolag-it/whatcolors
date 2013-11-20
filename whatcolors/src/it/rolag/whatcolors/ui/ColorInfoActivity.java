@@ -57,8 +57,12 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.AbsListView.MultiChoiceModeListener;
+import android.widget.Toast;
 
 /**
  * Elabora l'immagine specificata nella property {@code data} dell'{@link Intent} di avvio;
@@ -68,9 +72,7 @@ import android.widget.AbsListView.MultiChoiceModeListener;
  * @author Rocco Lagrotteria
  * 
  */
-public class ColorInfoActivity extends Activity {
-				
-	
+public class ColorInfoActivity extends Activity implements OnItemLongClickListener {	
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {	
@@ -140,11 +142,38 @@ public class ColorInfoActivity extends Activity {
 				lstResult.setMultiChoiceModeListener(new ColorChoiceListener());
 			} else {
 				lstResult.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-				
+				lstResult.setOnItemLongClickListener(this);
 			}
-			//TODO: Da gestire selezione dei colori per versioni pre-honeycomb
-			
 		}		
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		if (Build.VERSION.SDK_INT<Build.VERSION_CODES.HONEYCOMB){
+			getMenuInflater().inflate(R.menu.result, menu);
+		}
+		return true;
+	}
+		
+	@Override
+	public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position,	long id) {				
+		ListView lstResult = (ListView) findViewById(R.id.lstResult);		
+		
+		boolean selected = false;
+		long[] ids = lstResult.getCheckedItemIds();	
+		for (Long selectedId : ids) {
+			selected = (selectedId==id);
+			if (selected) break;
+		}
+		if (selected) {
+			lstResult.setItemChecked(position, false);
+			
+		} else {
+			lstResult.setItemChecked(position, true);			
+		}
+		
+		Log.d("**** ****", "item "+id+" sel "+!selected);
+		return true;
 	}
 	
 	@Override
@@ -152,6 +181,9 @@ public class ColorInfoActivity extends Activity {
 		super.onOptionsItemSelected(item);
 		if (item.getItemId() == android.R.id.home) {
 			finish();
+		} else
+		if (item.getItemId() == R.id.menuResultBlend) {
+			blend();
 		}
 		return true;
 	}
@@ -377,8 +409,8 @@ public class ColorInfoActivity extends Activity {
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 
 			switch (item.getItemId()) {
-				case R.id.menuResultMash:
-					mash();
+				case R.id.menuResultBlend:
+					blend();
 					mode.finish();
 					return true;
 				
@@ -425,7 +457,7 @@ public class ColorInfoActivity extends Activity {
 	 * selezionati nella {@link ListView} 
 	 * 
 	 */
-	public void mash() {
+	public void blend() {
 		ListView lstResult = (ListView) findViewById(R.id.lstResult);
 		if (lstResult!=null) {
 			ColorInfoAdapter adapter = (ColorInfoAdapter) lstResult.getAdapter();
@@ -433,17 +465,24 @@ public class ColorInfoActivity extends Activity {
 				ColorBlend colorBlend = new ColorBlend();
 				long[] ids = lstResult.getCheckedItemIds();
 				
-				for (Long id : ids) {
-					ColorInfo colorInfo = (ColorInfo) adapter.getItem(id.intValue());					
-					colorBlend.incrementColor(colorInfo.getRelatedColor());
+				if (ids.length>0) {
+					for (Long id : ids) {
+						ColorInfo colorInfo = (ColorInfo) adapter.getItem(id.intValue());					
+						colorBlend.incrementColor(colorInfo.getRelatedColor());
+					}
+					
+					String blendedColorCode = ColorInfo.intToHexCode(colorBlend.getColorBlend());				
+					Intent showDetail = new Intent(this, ColorDetailActivity.class);
+					showDetail.putExtra(Constants.COLOR_CODE, blendedColorCode);
+					startActivity(showDetail);
+				} else {
+					Toast.makeText(this, R.string.noblend_msg, Toast.LENGTH_SHORT).show();
 				}
-				
-				String mashedColorCode = ColorInfo.intToHexCode(colorBlend.getColorBlend());				
-				Intent showDetail = new Intent(this, ColorDetailActivity.class);
-				showDetail.putExtra(Constants.COLOR_CODE, mashedColorCode);
-				startActivity(showDetail);				
+							
 			}
 		}
 		
 	}
+
+	
 }

@@ -28,6 +28,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -132,7 +133,7 @@ public class ColorDetailActivity extends Activity {
 		txtColorCode.setTextColor(color^0x00FFFFFF);	
 		
 		/*
-		 * Il codice del colore viene copia in clipboard con un long-press
+		 * Il codice del colore viene copiato in clipboard con un long-press
 		 */
 		if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1){
 			layout.setOnLongClickListener(new OnLongClickListener() {
@@ -148,7 +149,18 @@ public class ColorDetailActivity extends Activity {
 				}
 			});
 		} else {
-			txtColorCode.setTextIsSelectable(true);
+			layout.setOnLongClickListener(new OnLongClickListener() {				
+				@SuppressWarnings("deprecation")
+				@SuppressLint("NewApi")
+				@Override
+				public boolean onLongClick(View v) {
+					android.text.ClipboardManager clipboard = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+				    clipboard.setText(getColorCode());
+					
+					Toast.makeText(ColorDetailActivity.this, getString(R.string.clip_entry_msg, getColorCode()), Toast.LENGTH_SHORT).show();
+					return true;
+				}
+			});
 		}		
 	}
 	

@@ -42,6 +42,8 @@
     <string name="clip_entry">Colore trovato con WhatColors</string>
     <string name="clip_entry_msg">Codice colore %s copiato negli appunti</string>
     <string name="share_msg">Mi piace il colore con hex-code %s, trovato con WhatColors</string>
+    <string name="noblend_msg">Nessun colore selezionato</string>
+    
     <string name="pref_precision">Precisione</string>
     <string name="pref_precision_info">un livello maggiore aumenta la quantit&#224; di pixel elaborati con la possibilit&#224; di cogliere pi&#249; dettagli</string>
 

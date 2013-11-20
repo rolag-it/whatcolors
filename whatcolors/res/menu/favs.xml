@@ -25,7 +25,7 @@
         android:title="@string/menu_favlst"
         android:icon="@drawable/ic_fav_del" />
     
-    <item android:id="@+id/menuFavoritesMash"
+    <item android:id="@+id/menuFavoritesBlend"
         android:orderInCategory="1" 
         android:showAsAction="ifRoom"
         android:title="@string/menu_favblend"

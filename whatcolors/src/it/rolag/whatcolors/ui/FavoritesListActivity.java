@@ -120,7 +120,7 @@ public class FavoritesListActivity extends ListActivity {
 	 * selezionati nella {@link ListView}  
 	 * 
 	 */
-	public void mash(){
+	public void blend(){
 		
 		ColorBlend colorBlend = new ColorBlend();
 		FavoritesListAdapter adapter = (FavoritesListAdapter) getListAdapter();
@@ -132,11 +132,11 @@ public class FavoritesListActivity extends ListActivity {
 			colorBlend.incrementColor(Color.parseColor(colorCode));
 		}
 		
-		String mashedColorCode = ColorInfo.intToHexCode(colorBlend.getColorBlend());
+		String blendedColorCode = ColorInfo.intToHexCode(colorBlend.getColorBlend());
 		
 		Intent showDetail = new Intent(this, ColorDetailActivity.class);
-		showDetail.putExtra(Constants.COLOR_CODE, mashedColorCode);
-		startActivityForResult(showDetail, R.id.menuFavoritesMash);		
+		showDetail.putExtra(Constants.COLOR_CODE, blendedColorCode);
+		startActivityForResult(showDetail, R.id.menuFavoritesBlend);		
 		
 	}
 	
@@ -149,7 +149,7 @@ public class FavoritesListActivity extends ListActivity {
 	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == R.id.menuFavoritesMash && resultCode == RESULT_OK) {
+		if (requestCode == R.id.menuFavoritesBlend && resultCode == RESULT_OK) {
 			initList();
 		} else {
 			super.onActivityResult(requestCode, resultCode, data);
@@ -178,8 +178,8 @@ public class FavoritesListActivity extends ListActivity {
 					mode.finish();
 					return true;
 	
-				case R.id.menuFavoritesMash:
-					mash();
+				case R.id.menuFavoritesBlend:
+					blend();
 					mode.finish();
 					return true;
 				
