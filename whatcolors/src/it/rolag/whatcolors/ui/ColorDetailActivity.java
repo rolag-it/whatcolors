@@ -125,7 +125,7 @@ public class ColorDetailActivity extends Activity {
 	protected void onStart() {		
 		super.onStart();
 		int color = Color.parseColor(colorCode);
-		View layout = findViewById(R.id.lytMash);
+		View layout = findViewById(R.id.lytColorDetail);
 		layout.setBackgroundColor(color);
 		
 		TextView txtColorCode = (TextView) findViewById(R.id.txtColorCode);

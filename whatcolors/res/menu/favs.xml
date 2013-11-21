@@ -22,7 +22,7 @@
     <item android:id="@+id/menuFavoritesDelete"
         android:orderInCategory="1" 
         android:showAsAction="always"
-        android:title="@string/menu_favlst"
+        android:title="@string/menu_favdel"
         android:icon="@drawable/ic_fav_del" />
     
     <item android:id="@+id/menuFavoritesBlend"

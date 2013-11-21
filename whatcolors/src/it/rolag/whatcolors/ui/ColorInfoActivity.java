@@ -155,24 +155,23 @@ public class ColorInfoActivity extends Activity implements OnItemLongClickListen
 		return true;
 	}
 		
+	/* (non-Javadoc)
+	 * Implementazione dell'OnItemClickListener per la ListView,
+	 * per gestire la multiselezioni di elementi su GingerBread 
+	 */
 	@Override
 	public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position,	long id) {				
 		ListView lstResult = (ListView) findViewById(R.id.lstResult);		
+		ColorInfoAdapter adapter = (ColorInfoAdapter) lstResult.getAdapter();
 		
-		boolean selected = false;
-		long[] ids = lstResult.getCheckedItemIds();	
-		for (Long selectedId : ids) {
-			selected = (selectedId==id);
-			if (selected) break;
-		}
+		boolean selected = adapter.getSelectedPosition().contains(Integer.valueOf(position));				
 		if (selected) {
 			lstResult.setItemChecked(position, false);
-			
+			adapter.getSelectedPosition().remove(Integer.valueOf(position));
 		} else {
-			lstResult.setItemChecked(position, true);			
-		}
-		
-		Log.d("**** ****", "item "+id+" sel "+!selected);
+			lstResult.setItemChecked(position, true);
+			adapter.getSelectedPosition().add(Integer.valueOf(position));
+		}		
 		return true;
 	}
 	
@@ -439,7 +438,7 @@ public class ColorInfoActivity extends Activity implements OnItemLongClickListen
 		}
 
 		@Override
-		public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+		public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {					
 			if (checked) {
 				selected++;
 			} else {

@@ -22,9 +22,12 @@ import it.rolag.whatcolors.R;
 import it.rolag.whatcolors.model.ColorInfo;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,11 +49,17 @@ public final class ColorInfoAdapter extends BaseAdapter {
 	
 	private final List<ColorInfo> listColorInfos;
 	private int total;
+	private final Set<Integer> selected;
+	
+	public Set<Integer> getSelectedPosition(){
+		return selected;
+	}
 		
 	public ColorInfoAdapter() {
 		super();
 		listColorInfos = new ArrayList<ColorInfo>();
 		total = 0;
+		selected = new LinkedHashSet<Integer>();
 	}
 	
 	public synchronized void addColorInfo(ColorInfo colorInfo){		
@@ -97,6 +106,20 @@ public final class ColorInfoAdapter extends BaseAdapter {
 			LayoutInflater layoutInflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			colorInfoView = layoutInflater.inflate(R.layout.list_element, null);
 			
+			if (Build.VERSION.SDK_INT>Build.VERSION_CODES.GINGERBREAD_MR1){
+				colorInfoView.setBackgroundResource(R.drawable.item_selector);				
+			} else {
+				/*
+				 * gestione degli elementi selezionati per Gingerbread,
+				 * perche' l'item selector non funziona 
+				 */
+				if (selected.contains(Integer.valueOf(position))) {
+					colorInfoView.setBackgroundResource(R.drawable.itm_select);
+				} else {
+					colorInfoView.setBackgroundResource(R.drawable.itm_unselect);
+				}
+			}
+			
 			colorInfoView.setId(colorInfo.hashCode());
 			colorInfoView.setTag(colorInfo.getLabel());
 			TextView txtColorCode = (TextView) colorInfoView.findViewById(R.id.txtColorCode);
@@ -111,6 +134,7 @@ public final class ColorInfoAdapter extends BaseAdapter {
 			} else {
 				colorInfoView.setEnabled(false);
 			}
+			
 		} catch(IndexOutOfBoundsException e) {
 			colorInfoView = null;
 		}

@@ -19,7 +19,9 @@
 package it.rolag.whatcolors.ui;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import it.rolag.whatcolors.Constants;
 import it.rolag.whatcolors.R;
@@ -44,6 +46,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView.MultiChoiceModeListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -56,7 +60,7 @@ import android.widget.Toast;
  * @author Rocco Lagrotteria
  *
  */
-public class FavoritesListActivity extends ListActivity {
+public class FavoritesListActivity extends ListActivity implements OnItemLongClickListener {
 	
 	@SuppressLint("NewApi")
 	@Override
@@ -72,17 +76,58 @@ public class FavoritesListActivity extends ListActivity {
 			
 			getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
 			getListView().setMultiChoiceModeListener(new FavoriteChoiceListener());			
+		} else {
+			getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+			getListView().setOnItemLongClickListener(this);
 		}
 		
 		initList();		
 	}
 		
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		if (Build.VERSION.SDK_INT<Build.VERSION_CODES.HONEYCOMB){
+			getMenuInflater().inflate(R.menu.favs, menu);
+		}
+		return true;
+	}
+	
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
 		super.onOptionsItemSelected(item);
-		if (item.getItemId() == android.R.id.home) {
-			finish();
-		}
+		switch (item.getItemId()) { 
+			case android.R.id.home: 
+				finish();
+				break;
+			
+			case R.id.menuFavoritesBlend:
+				blend();
+				break;
+				
+			case R.id.menuFavoritesDelete:
+				deleteChecked();
+				break;
+		} 
+		return true;
+	}
+	
+	/* (non-Javadoc)
+	 * Implementazione dell'OnItemClickListener per la ListView,
+	 * per gestire la multiselezioni di elementi su GingerBread 
+	 */
+	@Override
+	public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position,	long id) {				
+				
+		FavoritesListAdapter adapter = (FavoritesListAdapter) getListAdapter();
+		
+		boolean selected = adapter.getSelectedPosition().contains(Integer.valueOf(position));				
+		if (selected) {
+			getListView().setItemChecked(position, false);
+			adapter.getSelectedPosition().remove(Integer.valueOf(position));
+		} else {
+			getListView().setItemChecked(position, true);
+			adapter.getSelectedPosition().add(Integer.valueOf(position));
+		}		
 		return true;
 	}
 	
@@ -102,16 +147,20 @@ public class FavoritesListActivity extends ListActivity {
 	
 	public void deleteChecked(){
 		long[] ids = getListView().getCheckedItemIds();
-		List<String> toDeleteList = new ArrayList<String>(ids.length);
-		FavoritesListAdapter adapter = (FavoritesListAdapter) getListAdapter();
-		
-		for (Long id : ids) {
-			toDeleteList.add(adapter.getItem(id.intValue()));
+		if (ids.length>0) {
+			List<String> toDeleteList = new ArrayList<String>(ids.length);
+			FavoritesListAdapter adapter = (FavoritesListAdapter) getListAdapter();
+			
+			for (Long id : ids) {
+				toDeleteList.add(adapter.getItem(id.intValue()));
+			}
+			
+			FavoritesManager.delete(this, toDeleteList);
+			
+			initList();
+		} else {
+			Toast.makeText(this, R.string.noblend_msg, Toast.LENGTH_SHORT).show();
 		}
-		
-		FavoritesManager.delete(this, toDeleteList);
-		
-		initList();		
 	}
 	
 	/**
@@ -126,17 +175,21 @@ public class FavoritesListActivity extends ListActivity {
 		FavoritesListAdapter adapter = (FavoritesListAdapter) getListAdapter();
 		
 		long[] ids = getListView().getCheckedItemIds();
-		for (Long id : ids) {
+	    if (ids.length>0) {	
+			for (Long id : ids) {
+				
+				String colorCode = adapter.getItem(id.intValue());			
+				colorBlend.incrementColor(Color.parseColor(colorCode));
+			}
 			
-			String colorCode = adapter.getItem(id.intValue());			
-			colorBlend.incrementColor(Color.parseColor(colorCode));
+			String blendedColorCode = ColorInfo.intToHexCode(colorBlend.getColorBlend());
+			
+			Intent showDetail = new Intent(this, ColorDetailActivity.class);
+			showDetail.putExtra(Constants.COLOR_CODE, blendedColorCode);
+			startActivityForResult(showDetail, R.id.menuFavoritesBlend);
+		} else {
+			Toast.makeText(this, R.string.noblend_msg, Toast.LENGTH_SHORT).show();
 		}
-		
-		String blendedColorCode = ColorInfo.intToHexCode(colorBlend.getColorBlend());
-		
-		Intent showDetail = new Intent(this, ColorDetailActivity.class);
-		showDetail.putExtra(Constants.COLOR_CODE, blendedColorCode);
-		startActivityForResult(showDetail, R.id.menuFavoritesBlend);		
 		
 	}
 	
@@ -231,8 +284,15 @@ public class FavoritesListActivity extends ListActivity {
 	 */
 	private class FavoritesListAdapter extends ArrayAdapter<String> {
 
+		private final Set<Integer> selected;
+		
+		public Set<Integer> getSelectedPosition(){
+			return selected;
+		}
+		
 		public FavoritesListAdapter(Activity context) {
 			super(context, R.layout.list_element, FavoritesManager.list(context));
+			selected = new LinkedHashSet<Integer>();
 		}	
 
 		@Override
@@ -251,6 +311,20 @@ public class FavoritesListActivity extends ListActivity {
 			
 			LayoutInflater layoutInflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View favoriteView = layoutInflater.inflate(R.layout.list_element, null);
+			
+			if (Build.VERSION.SDK_INT>Build.VERSION_CODES.GINGERBREAD_MR1){
+				favoriteView.setBackgroundResource(R.drawable.item_selector);				
+			} else {
+				/*
+				 * gestione degli elementi selezionati per Gingerbread,
+				 * perche' l'item selector non funziona 
+				 */
+				if (selected.contains(Integer.valueOf(position))) {
+					favoriteView.setBackgroundResource(R.drawable.itm_select);
+				} else {
+					favoriteView.setBackgroundResource(R.drawable.itm_unselect);
+				}
+			}
 			
 			int color = Color.parseColor(colorCode);
 			favoriteView.setId(color);
