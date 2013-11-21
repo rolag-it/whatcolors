@@ -23,8 +23,6 @@ import it.rolag.whatcolors.R;
 import it.rolag.whatcolors.model.ColorBlend;
 import it.rolag.whatcolors.model.ColorInfo;
 import it.rolag.whatcolors.tools.ActivityUtil;
-import it.rolag.whatcolors.tools.ColorInfoAdapter;
-
 import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -37,11 +35,10 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -53,16 +50,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
-import android.view.ActionMode;
+import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.ListView;
-import android.widget.AbsListView.MultiChoiceModeListener;
-import android.widget.Toast;
 
 /**
  * Elabora l'immagine specificata nella property {@code data} dell'{@link Intent} di avvio;
@@ -72,13 +66,12 @@ import android.widget.Toast;
  * @author Rocco Lagrotteria
  * 
  */
-public class ColorInfoActivity extends Activity implements OnItemLongClickListener {	
+public class ResultListActivity extends ColorInfoListActivity {	
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {	
-		super.onCreate(savedInstanceState);		
-
-		setContentView(R.layout.view_result);
+		super.onCreate(savedInstanceState);
+		
 		if (Build.VERSION.SDK_INT>Build.VERSION_CODES.GINGERBREAD_MR1){
 			ActionBar actionBar = getActionBar();
 			if (actionBar != null) {
@@ -122,6 +115,38 @@ public class ColorInfoActivity extends Activity implements OnItemLongClickListen
 		}		
 	}
 	
+	@Override
+	protected void onPostResume() {
+		super.onPostResume();		
+		getListView().clearChoices();		
+	}
+	
+	@Override
+	public View buildItemView(ColorInfo colorInfo, float percentRatio) {
+		View colorInfoView;
+							
+		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		colorInfoView = layoutInflater.inflate(R.layout.list_element, null);			
+		
+		colorInfoView.setId(colorInfo.hashCode());
+		colorInfoView.setTag(colorInfo.getLabel());
+		TextView txtColorCode = (TextView) colorInfoView.findViewById(R.id.txtColorCode);
+		txtColorCode.setText(colorInfo.getLabel());
+		
+		TextView txtColorShare = (TextView) colorInfoView.findViewById(R.id.txtColorShare);
+		txtColorShare.setText(Math.round(colorInfo.getShare()*percentRatio) + "%");
+		
+		ImageView imgColorSample = (ImageView) colorInfoView.findViewById(R.id.imgColorSample);
+		if (colorInfo.getLabel().matches("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")) {
+			imgColorSample.setBackgroundColor(colorInfo.getRelatedColor());	
+		} else {
+			colorInfoView.setEnabled(false);
+		}
+		
+		return colorInfoView;
+	}
+	
+	
 	/**
 	 * Popola la {@link ListView} dei risultati
 	 * 	
@@ -131,20 +156,17 @@ public class ColorInfoActivity extends Activity implements OnItemLongClickListen
 	 */
 	@SuppressLint("NewApi")
 	public void renderList(ColorInfoAdapter colorInfoAdapter) {			
-		ListView lstResult = (ListView) findViewById(R.id.lstResult);		
 		
-		if (lstResult!=null) {			
-			lstResult.setAdapter(colorInfoAdapter);	
-			lstResult.setOnItemClickListener(new ColorDetailActivity.OpenerOnItemClick(this));
-			
-			if (Build.VERSION.SDK_INT>Build.VERSION_CODES.GINGERBREAD_MR1){
-				lstResult.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-				lstResult.setMultiChoiceModeListener(new ColorChoiceListener());
-			} else {
-				lstResult.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-				lstResult.setOnItemLongClickListener(this);
-			}
-		}		
+		setListAdapter(colorInfoAdapter);
+		getListView().setOnItemClickListener(this);
+		
+		if (Build.VERSION.SDK_INT>Build.VERSION_CODES.GINGERBREAD_MR1){
+			getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+			getListView().setMultiChoiceModeListener(new ListItemChoiceListener(R.menu.result));
+		} else {
+			getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+			getListView().setOnItemLongClickListener(this);
+		}				
 	}
 	
 	@Override
@@ -153,27 +175,7 @@ public class ColorInfoActivity extends Activity implements OnItemLongClickListen
 			getMenuInflater().inflate(R.menu.result, menu);
 		}
 		return true;
-	}
-		
-	/* (non-Javadoc)
-	 * Implementazione dell'OnItemClickListener per la ListView,
-	 * per gestire la multiselezioni di elementi su GingerBread 
-	 */
-	@Override
-	public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position,	long id) {				
-		ListView lstResult = (ListView) findViewById(R.id.lstResult);		
-		ColorInfoAdapter adapter = (ColorInfoAdapter) lstResult.getAdapter();
-		
-		boolean selected = adapter.getSelectedPosition().contains(Integer.valueOf(position));				
-		if (selected) {
-			lstResult.setItemChecked(position, false);
-			adapter.getSelectedPosition().remove(Integer.valueOf(position));
-		} else {
-			lstResult.setItemChecked(position, true);
-			adapter.getSelectedPosition().add(Integer.valueOf(position));
-		}		
-		return true;
-	}
+	}	
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
@@ -181,7 +183,7 @@ public class ColorInfoActivity extends Activity implements OnItemLongClickListen
 		if (item.getItemId() == android.R.id.home) {
 			finish();
 		} else
-		if (item.getItemId() == R.id.menuResultBlend) {
+		if (item.getItemId() == R.id.menuBlend) {
 			blend();
 		}
 		return true;
@@ -190,18 +192,10 @@ public class ColorInfoActivity extends Activity implements OnItemLongClickListen
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {	
 		super.onSaveInstanceState(outState);
-		
-		/*
-		 * Salvataggio dei dati contenuti nell'adapter
-		 * per un successivo ripristino della lista
-		 */
-		ListView lstResult = (ListView) findViewById(R.id.lstResult);
-		if (lstResult!=null) {
-			ColorInfoAdapter colorInfoAdapter = (ColorInfoAdapter) lstResult.getAdapter();
-			if (colorInfoAdapter!=null) {				
-				outState.putParcelableArray(Constants.COLOR_ENTRIES, colorInfoAdapter.dumpData());				
-			}			
-		}
+		ColorInfoAdapter colorInfoAdapter = (ColorInfoAdapter) getListAdapter();
+		if (colorInfoAdapter!=null) {				
+			outState.putParcelableArray(Constants.COLOR_ENTRIES, colorInfoAdapter.dumpData());				
+		}	
 	}
 	
 	/**
@@ -226,8 +220,8 @@ public class ColorInfoActivity extends Activity implements OnItemLongClickListen
 			 * per impedire il crash in caso di rotazione
 			 * dello schermo
 			 */
-			ActivityUtil.lockOrientation(ColorInfoActivity.this);
-			progressDialog = new ProgressDialog(ColorInfoActivity.this);
+			ActivityUtil.lockOrientation(ResultListActivity.this);
+			progressDialog = new ProgressDialog(ResultListActivity.this);
 			progressDialog.setIndeterminate(true);
 			progressDialog.setCancelable(false);
 			progressDialog.setMessage(getString(R.string.scan_message));
@@ -295,12 +289,12 @@ public class ColorInfoActivity extends Activity implements OnItemLongClickListen
 		protected void onPostExecute(Boolean error) {
 			progressDialog.dismiss();
 			if (error.booleanValue()) {				
-				AlertDialog.Builder alertBuilding = new AlertDialog.Builder(ColorInfoActivity.this);
+				AlertDialog.Builder alertBuilding = new AlertDialog.Builder(ResultListActivity.this);
 				alertBuilding.setMessage(R.string.scan_error);
 				alertBuilding.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {					
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						ColorInfoActivity.this.finish();						
+						ResultListActivity.this.finish();						
 					}
 				});
 				alertBuilding.create().show();
@@ -322,7 +316,7 @@ public class ColorInfoActivity extends Activity implements OnItemLongClickListen
 						break;
 					}
 				}
-				ActivityUtil.unlockOrientation(ColorInfoActivity.this);
+				ActivityUtil.unlockOrientation(ResultListActivity.this);
 				renderList(colorInfoAdapter);				
 			}			
 			
@@ -391,97 +385,8 @@ public class ColorInfoActivity extends Activity implements OnItemLongClickListen
 			return allColorInfos;
 		}		
 	}
-	
-	/**
-	 * Gestisce la selezione degli elementi della lista
-	 * per la visualizzazione del colore 
-	 * risultante dal mash della selezione
-	 * 
-	 * @author Rocco Lagrotteria
-	 *
-	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	private class ColorChoiceListener implements MultiChoiceModeListener {
-		int selected = 0;
-		
-		@Override
-		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
 
-			switch (item.getItemId()) {
-				case R.id.menuResultBlend:
-					blend();
-					mode.finish();
-					return true;
-				
-				default:
-					return false;
-			}
-			
-		}
-
-		@Override
-		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-			MenuInflater inflater = getMenuInflater();
-	        inflater.inflate(R.menu.result, menu);
-	       
-	        return true;
-		}
-
-		@Override
-		public void onDestroyActionMode(ActionMode mode) {
-			selected = 0;
-		}
-
-		@Override
-		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {			
-			return true;
-		}
-
-		@Override
-		public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {					
-			if (checked) {
-				selected++;
-			} else {
-				selected--;
-			}			
-			mode.setTitle(getString(R.string.menu_restitle, selected));
-		}
-		
-	}
-
-	
-	/**
-	 * Avvia la visualizzazione del colore ottenuto
-	 * da un {@link ColorBlend} per i colori
-	 * selezionati nella {@link ListView} 
-	 * 
-	 */
-	public void blend() {
-		ListView lstResult = (ListView) findViewById(R.id.lstResult);
-		if (lstResult!=null) {
-			ColorInfoAdapter adapter = (ColorInfoAdapter) lstResult.getAdapter();
-			if (adapter!=null) {
-				ColorBlend colorBlend = new ColorBlend();
-				long[] ids = lstResult.getCheckedItemIds();
-				
-				if (ids.length>0) {
-					for (Long id : ids) {
-						ColorInfo colorInfo = (ColorInfo) adapter.getItem(id.intValue());					
-						colorBlend.incrementColor(colorInfo.getRelatedColor());
-					}
-					
-					String blendedColorCode = ColorInfo.intToHexCode(colorBlend.getColorBlend());				
-					Intent showDetail = new Intent(this, ColorDetailActivity.class);
-					showDetail.putExtra(Constants.COLOR_CODE, blendedColorCode);
-					startActivity(showDetail);
-				} else {
-					Toast.makeText(this, R.string.noblend_msg, Toast.LENGTH_SHORT).show();
-				}
-							
-			}
-		}
-		
-	}
-
+	@Override
+	public void deleteChecked() {}
 	
 }

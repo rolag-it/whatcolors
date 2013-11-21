@@ -32,11 +32,9 @@
     <string name="menu_share">Condividi</string>
     <string name="menu_favadd">Aggiungi ai preferiti</string>
     <string name="menu_favlst">Preferiti</string>
-    <string name="menu_favdel">Cancella</string>
-    <string name="menu_favmash">Combina</string>
-    <string name="menu_favtitle">%s selezionato</string>
-    <string name="menu_restitle">%s selezionato</string>
-    <string name="menu_resmash">Combina</string>
+    <string name="menu_delete">Cancella</string>
+	<string name="menu_blend">Combina</string>
+	<string name="menu_selected">Selezionati: %s</string>
     <string name="favadd_msg">Colore %s aggiunto alla lista dei preferiti </string>
     <string name="favempty_msg">La lista dei preferiti è vuota</string>
     <string name="clip_entry">Colore trovato con WhatColors</string>

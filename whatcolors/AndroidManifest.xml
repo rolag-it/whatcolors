@@ -2,6 +2,7 @@
 <!--
  * Copyright (C) 2013 Rocco Lagrotteria
  * 
+ * 
  * This file is part of WhatColors app for Android(tm). 
  *
  *   WhatColors is free software: you can redistribute it and/or modify
@@ -19,8 +20,8 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="it.rolag.whatcolors"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="2"
+    android:versionName="1.0.01" >
 
     <uses-sdk
         android:minSdkVersion="10"
@@ -49,7 +50,7 @@
         </activity>
         
         <activity
-            android:name="it.rolag.whatcolors.ui.ColorInfoActivity"
+            android:name="it.rolag.whatcolors.ui.ResultListActivity"
             android:label="@string/scan_result" 
             android:theme="@style/AppTheme" >            
         </activity>

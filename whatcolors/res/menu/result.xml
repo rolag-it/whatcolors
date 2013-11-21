@@ -19,10 +19,10 @@
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
        
-    <item android:id="@+id/menuResultBlend"
+    <item android:id="@+id/menuBlend"
         android:orderInCategory="1" 
         android:showAsAction="always"
-        android:title="@string/menu_resblend"
+        android:title="@string/menu_blend"
         android:icon="@drawable/ic_menu_blend" />
         
 </menu>

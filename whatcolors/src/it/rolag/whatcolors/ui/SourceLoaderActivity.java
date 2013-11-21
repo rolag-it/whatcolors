@@ -174,7 +174,7 @@ public class SourceLoaderActivity extends Activity {
 	 */
 	private void startScanning() {
 		if (mImageUri!=null) {
-			Intent scanIntent = new Intent(this, ColorInfoActivity.class);
+			Intent scanIntent = new Intent(this, ResultListActivity.class);
 			scanIntent.setData(mImageUri);
 			startActivity(scanIntent);
 		} else {

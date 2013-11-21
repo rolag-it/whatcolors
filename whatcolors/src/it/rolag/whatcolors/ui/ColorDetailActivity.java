@@ -18,8 +18,6 @@
  */
 package it.rolag.whatcolors.ui;
 
-import java.lang.ref.WeakReference;
-
 import it.rolag.whatcolors.Constants;
 import it.rolag.whatcolors.R;
 import it.rolag.whatcolors.tools.FavoritesManager;
@@ -39,9 +37,6 @@ import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.view.View.OnLongClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -186,32 +181,6 @@ public class ColorDetailActivity extends Activity {
 	protected void onSaveInstanceState(Bundle outState) {		
 		super.onSaveInstanceState(outState);
 		outState.putString(Constants.COLOR_CODE, colorCode);
-	}
-	
-	/**
-	 * Implementazione di {@link OnItemClickListener}
-	 * per le {@link ListView} da cui si accede alla
-	 * schermata di dettaglio del colore
-	 * 
-	 * @author Rocco Lagrotteria
-	 *
-	 */
-	public static class OpenerOnItemClick implements OnItemClickListener {
-		
-		private WeakReference<Activity> fromActivityReference;
-		
-		public OpenerOnItemClick(Activity fromActivity) {
-			fromActivityReference = new WeakReference<Activity>(fromActivity);
-		}
+	}	
 
-		@Override
-		public void onItemClick(AdapterView<?> adapter, View view,	int position, long id) {
-			Activity fromActivity = fromActivityReference.get();
-			if (fromActivity!=null) {
-				Intent showDetail = new Intent(fromActivity, ColorDetailActivity.class);
-				showDetail.putExtra(Constants.COLOR_CODE, (String) view.getTag());
-				fromActivity.startActivity(showDetail);
-			}
-		}
-	}
 }

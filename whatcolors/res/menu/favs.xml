@@ -19,16 +19,16 @@
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     
-    <item android:id="@+id/menuFavoritesDelete"
+    <item android:id="@+id/menuDelete"
         android:orderInCategory="1" 
         android:showAsAction="always"
-        android:title="@string/menu_favdel"
+        android:title="@string/menu_delete"
         android:icon="@drawable/ic_fav_del" />
     
-    <item android:id="@+id/menuFavoritesBlend"
+    <item android:id="@+id/menuBlend"
         android:orderInCategory="1" 
         android:showAsAction="ifRoom"
-        android:title="@string/menu_favblend"
+        android:title="@string/menu_blend"
         android:icon="@drawable/ic_menu_blend" />
    
     
