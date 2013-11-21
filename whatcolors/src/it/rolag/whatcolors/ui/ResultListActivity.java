@@ -40,6 +40,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -49,6 +50,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -205,7 +207,7 @@ public class ResultListActivity extends ColorInfoListActivity {
 	 * 
 	 * @author Rocco Lagrotteria	 
 	 */
-	private class ImageParserTask extends AsyncTask<Uri, Void, Boolean> {		
+	private class ImageParserTask extends AsyncTask<Uri, Void, Boolean> implements OnCancelListener {		
 		
 		private int totalPixels, precision, fidelity;		
 		private SortedSet<ColorInfo> colorInfos;				
@@ -213,8 +215,7 @@ public class ResultListActivity extends ColorInfoListActivity {
 				
 		
 		@Override
-		protected void onPreExecute() {
-			
+		protected void onPreExecute() {			
 			/*
 			 * nesessario bloccare l'orientamento della view
 			 * per impedire il crash in caso di rotazione
@@ -223,7 +224,8 @@ public class ResultListActivity extends ColorInfoListActivity {
 			ActivityUtil.lockOrientation(ResultListActivity.this);
 			progressDialog = new ProgressDialog(ResultListActivity.this);
 			progressDialog.setIndeterminate(true);
-			progressDialog.setCancelable(false);
+			progressDialog.setCancelable(true);
+			progressDialog.setOnCancelListener(this);
 			progressDialog.setMessage(getString(R.string.scan_message));
 			progressDialog.show();
 			
@@ -242,10 +244,15 @@ public class ResultListActivity extends ColorInfoListActivity {
 			}			
 		}		
 		
+		@SuppressLint("Wakelock")
 		@Override
 		protected Boolean doInBackground(Uri... params) {			
 			
 			Boolean error = Boolean.FALSE;
+			
+		    PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+	        PowerManager.WakeLock waveLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
+	        waveLock.acquire();
 			
 			try {			
 				colorInfos = new TreeSet<ColorInfo>();				
@@ -257,12 +264,17 @@ public class ResultListActivity extends ColorInfoListActivity {
 				 * Logica di accorpamento (mash) dei colori che hanno somiglianza 
 				 * entro la soglia fidelity
 				 */
-				do {
+				do {					
+					if (isCancelled()) throw new InterruptedException();
+					
 					ColorBlend colorBlend = new ColorBlend();
 					int matchCount = mainColor.getShare();				
 					colorBlend.incrementColor(mainColor.getRelatedColor());
+										 
 					
-					do {					
+					do {
+						if (isCancelled()) throw new InterruptedException();
+						
 						ColorInfo otherColor = allColorInfos.poll();
 						if (mainColor.isMatchingColor(otherColor, fidelity)) {
 							colorBlend.incrementColor(otherColor.getRelatedColor());
@@ -275,19 +287,32 @@ public class ResultListActivity extends ColorInfoListActivity {
 					
 					colorInfos.add(new ColorInfo(colorBlend.getColorBlend(), matchCount));
 				
-				} while(!allColorInfos.isEmpty());			
-				 
+				} while(!allColorInfos.isEmpty());	
 				
 			} catch (Exception exception) {
 				error = Boolean.TRUE;
 				Log.wtf(Constants.LOG_TAG, "Errore elaborazione file ", exception);
-			}
+			} 
+			
+			waveLock.release();
 			return error;
+		}
+		
+		@Override
+		public void onCancel(DialogInterface dialog) {
+			cancel(true);
+		}
+		
+		@Override
+		protected void onCancelled() {			
+			super.onCancelled();
+			ResultListActivity.this.finish();
 		}
 		
 		@Override
 		protected void onPostExecute(Boolean error) {
 			progressDialog.dismiss();
+			
 			if (error.booleanValue()) {				
 				AlertDialog.Builder alertBuilding = new AlertDialog.Builder(ResultListActivity.this);
 				alertBuilding.setMessage(R.string.scan_error);
@@ -383,7 +408,9 @@ public class ResultListActivity extends ColorInfoListActivity {
 			}	
 			
 			return allColorInfos;
-		}		
+		}
+
+				
 	}
 
 	@Override

@@ -20,7 +20,7 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="it.rolag.whatcolors"
-    android:versionCode="2"
+    android:versionCode="3"
     android:versionName="1.0.01" >
 
     <uses-sdk
@@ -28,8 +28,17 @@
         android:targetSdkVersion="18" />
     
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
+	<supports-screens 
+	    android:smallScreens="true"
+	    android:normalScreens="true"
+	    android:largeScreens="true"
+	    android:xlargeScreens="true"
+	    android:resizeable="true"
+	    android:anyDensity="true"/>    
+    
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher">
