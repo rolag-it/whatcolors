@@ -20,6 +20,7 @@ package it.rolag.whatcolors.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import it.rolag.whatcolors.R;
 import it.rolag.whatcolors.model.ColorInfo;
 import it.rolag.whatcolors.tools.FavoritesManager;
@@ -33,6 +34,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -137,27 +139,36 @@ public class FavoritesListActivity extends ColorInfoListActivity {
 	}	
 	
 	@Override
-	public View buildItemView(ColorInfo colorInfo, float percentRatio) {
+	public View buildItemView(View favoriteView, ViewGroup root, ColorInfo colorInfo, float percentRatio) {
 		String colorCode = colorInfo.getLabel();
 		
-		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View favoriteView = layoutInflater.inflate(R.layout.list_element, null);
-			
+		ViewHolder viewHolder;
+		if (favoriteView==null) {		
+			LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			favoriteView = layoutInflater.inflate(R.layout.list_element, root, false);
+			favoriteView.findViewById(R.id.txtColorShare).setVisibility(View.INVISIBLE);
+			viewHolder = new ViewHolder();
+			viewHolder.imgColorSample = (ImageView) favoriteView.findViewById(R.id.imgColorSample);
+			viewHolder.txtColorCode = (TextView) favoriteView.findViewById(R.id.txtColorCode);
+			favoriteView.setTag(viewHolder);
+		} else {
+			viewHolder = (ViewHolder) favoriteView.getTag();
+		}
+		
 		int color = Color.parseColor(colorCode);
-		favoriteView.setId(color);
-		favoriteView.setTag(colorCode);
-		TextView txtColorCode = (TextView) favoriteView.findViewById(R.id.txtColorCode);
-		txtColorCode.setText(colorCode);
-		
-		favoriteView.findViewById(R.id.txtColorShare).setVisibility(View.INVISIBLE);
-		
-		ImageView imgColorSample = (ImageView) favoriteView.findViewById(R.id.imgColorSample);
+		viewHolder.txtColorCode.setText(colorCode);		
+				
 		if (colorCode.matches("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")) {
-			imgColorSample.setBackgroundColor(color);	
+			viewHolder.imgColorSample.setBackgroundColor(color);	
 		} else {
 			favoriteView.setEnabled(false);
 		}
 		return favoriteView;
+	}
+	
+	private static class ViewHolder {
+		TextView txtColorCode;
+		ImageView imgColorSample;		
 	}
 	
 }

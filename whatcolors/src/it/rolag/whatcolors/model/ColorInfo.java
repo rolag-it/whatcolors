@@ -163,7 +163,7 @@ public class ColorInfo implements Comparable<ColorInfo>, Cloneable, Parcelable {
 	}
 	
 	/**
-	 * Sice se il colore specificato e somigliante 
+	 * Dice se il colore specificato e somigliante 
 	 * nei limiti della soglia percentuale indicata 
 	 * 
 	 * @param another un altro {@link ColorInfo}

@@ -201,7 +201,7 @@ public abstract class ColorInfoListActivity extends ListActivity implements OnIt
 	 * @param percentRatio Valore percentuale della property {@link ColorInfo#getShare()}  
 	 * 
 	 */
-	public abstract View buildItemView(ColorInfo colorInfo, float percentRatio); 
+	public abstract View buildItemView(View convertView, ViewGroup root, ColorInfo colorInfo, float percentRatio); 
 	
 	
 	/**
@@ -272,7 +272,7 @@ public abstract class ColorInfoListActivity extends ListActivity implements OnIt
 			float percentRatio =  100F/total;
 			ColorInfo colorInfo = listColorInfos.get(position);
 			
-			View colorInfoView = buildItemView(colorInfo, percentRatio);
+			View colorInfoView = buildItemView(convertView, parent, colorInfo, percentRatio);
 			if (Build.VERSION.SDK_INT>Build.VERSION_CODES.GINGERBREAD_MR1){
 				colorInfoView.setBackgroundResource(R.drawable.item_selector);				
 			} else {

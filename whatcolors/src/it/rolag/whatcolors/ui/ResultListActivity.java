@@ -23,6 +23,7 @@ import it.rolag.whatcolors.R;
 import it.rolag.whatcolors.model.ColorBlend;
 import it.rolag.whatcolors.model.ColorInfo;
 import it.rolag.whatcolors.tools.ActivityUtil;
+
 import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -56,6 +57,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ListView;
@@ -124,23 +126,26 @@ public class ResultListActivity extends ColorInfoListActivity {
 	}
 	
 	@Override
-	public View buildItemView(ColorInfo colorInfo, float percentRatio) {
-		View colorInfoView;
-							
-		LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		colorInfoView = layoutInflater.inflate(R.layout.list_element, null);			
+	public View buildItemView(View colorInfoView, ViewGroup root, ColorInfo colorInfo, float percentRatio) {
+		ViewHolder viewHolder;
+		if (colorInfoView==null) {		
+			LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			colorInfoView = layoutInflater.inflate(R.layout.list_element, root, false);
+			
+			viewHolder = new ViewHolder();
+			viewHolder.imgColorSample = (ImageView) colorInfoView.findViewById(R.id.imgColorSample);
+			viewHolder.txtColorCode = (TextView) colorInfoView.findViewById(R.id.txtColorCode);
+			viewHolder.txtColorShare = (TextView) colorInfoView.findViewById(R.id.txtColorShare);
+			colorInfoView.setTag(viewHolder);
+		} else {
+			viewHolder = (ViewHolder) colorInfoView.getTag();
+		}	
 		
-		colorInfoView.setId(colorInfo.hashCode());
-		colorInfoView.setTag(colorInfo.getLabel());
-		TextView txtColorCode = (TextView) colorInfoView.findViewById(R.id.txtColorCode);
-		txtColorCode.setText(colorInfo.getLabel());
+		viewHolder.txtColorCode.setText(colorInfo.getLabel());		
+		viewHolder.txtColorShare.setText(Math.round(colorInfo.getShare()*percentRatio) + "%");		
 		
-		TextView txtColorShare = (TextView) colorInfoView.findViewById(R.id.txtColorShare);
-		txtColorShare.setText(Math.round(colorInfo.getShare()*percentRatio) + "%");
-		
-		ImageView imgColorSample = (ImageView) colorInfoView.findViewById(R.id.imgColorSample);
 		if (colorInfo.getLabel().matches("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")) {
-			imgColorSample.setBackgroundColor(colorInfo.getRelatedColor());	
+			viewHolder.imgColorSample.setBackgroundColor(colorInfo.getRelatedColor());	
 		} else {
 			colorInfoView.setEnabled(false);
 		}
@@ -148,7 +153,11 @@ public class ResultListActivity extends ColorInfoListActivity {
 		return colorInfoView;
 	}
 	
-	
+	private static class ViewHolder {
+		TextView txtColorCode,txtColorShare;
+		ImageView imgColorSample;		
+	}
+		
 	/**
 	 * Popola la {@link ListView} dei risultati
 	 * 	
@@ -272,7 +281,7 @@ public class ResultListActivity extends ColorInfoListActivity {
 					colorBlend.incrementColor(mainColor.getRelatedColor());
 										 
 					
-					do {
+					 while(!allColorInfos.isEmpty()) {
 						if (isCancelled()) throw new InterruptedException();
 						
 						ColorInfo otherColor = allColorInfos.poll();
@@ -283,7 +292,7 @@ public class ResultListActivity extends ColorInfoListActivity {
 							mainColor = otherColor.clone();
 							break;
 						}
-					} while(!allColorInfos.isEmpty());
+					};
 					
 					colorInfos.add(new ColorInfo(colorBlend.getColorBlend(), matchCount));
 				
@@ -360,10 +369,10 @@ public class ResultListActivity extends ColorInfoListActivity {
 			bmpopts.inSampleSize = precision;			
 			bmpopts.inDither = true;
 			
-			Bitmap imageReaded =  BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri), null, bmpopts);			
+			final Bitmap imageReaded =  BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri), null, bmpopts);			
 			int imageWidth = imageReaded.getWidth();
 			int imageHeight = imageReaded.getHeight();
-			
+						
 			Map<String, Integer> colorsCount = new LinkedHashMap<String, Integer>();
 			totalPixels = imageWidth * imageHeight;
 		
@@ -386,7 +395,7 @@ public class ResultListActivity extends ColorInfoListActivity {
 				}
 			}
 			
-			imageReaded.recycle();
+			//imageReaded.recycle();
 			
 			/*
 			 * Ordinamento per tonalita'
