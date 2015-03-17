@@ -1,0 +1,1 @@
+WhatColors is an app for Android(tm): a tool to pick hex-code of dominant colors from a picture.
