@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ * Copyright (C) 2013 Rocco Lagrotteria
+ * 
+ * This file is part of WhatColors app for Android(tm). 
+ *
+ *   WhatColors is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   WhatColors is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with WhatColors.  If not, see <http://www.gnu.org/licenses/>. 
+-->
+<resources>
+    <string name="app_name">WhatColors</string>
+    <string name="app_settings">Settings</string>
+    <string name="type_missmatch">Cannot handle received data</string>
+    <string name="scan_result">Colors found</string>
+    <string name="scan_message">Scanning&#8230;</string>
+    <string name="scan_error">Scanning error</string>
+    <string name="action_camera">Get picture by camera</string>
+	<string name="action_gallery">Get picture by gallery</string>
+	<string name="color_default">#FFFFFF</string>
+	<string name="color_mist">OTHER</string>
+	<string name="menu_pref">Settings</string>
+	<string name="menu_share">Share</string>
+	<string name="menu_favadd">Add to favorites</string>
+	<string name="menu_favlst">Favorites</string>
+	<string name="menu_delete">Delete</string>
+	<string name="menu_blend">Blend</string>
+	<string name="menu_selected">%s selected</string>	
+	<string name="favadd_msg">Color %s added to favorites list</string>	
+	<string name="favempty_msg">Favorites list is empty</string>	
+	<string name="clip_entry">Selected color by WhatColors</string>
+	<string name="clip_entry_msg">Color code %s copied into clipboard</string>
+	<string name="share_msg">I like the color having hex-code %s, found using WhatColors</string>
+	<string name="noblend_msg">No colors selected to blend</string>
+	
+	<string name="pref_precision">Precision</string>
+	<string name="pref_precision_info">higher level increases the number of pixel and thus the ability to seize details</string>
+	<string-array name="precision_scale_label">
+	    <item>Fast</item>
+	    <item>Standard</item>
+	    <item>High</item>
+	    <item>Ultra</item>
+	</string-array>
+	<string-array name="precision_scale_value">
+	    <item>64</item>
+	    <item>32</item>
+	    <item>16</item>
+	    <item>4</item>
+	</string-array>
+	
+	<string name="pref_fidelity">Fidelity</string>
+	<string name="pref_fidelity_info">higher level increases the number of colors detected when scanning the image</string>
+	<string-array name="fidelity_scale_label">
+	    <item>Fast</item>
+	    <item>Standard</item>
+	    <item>High</item>
+	    <item>Ultra</item>
+	</string-array>
+	
+	 <string-array name="fidelity_scale_value">
+	    <item>72</item>
+	    <item>56</item>
+	    <item>32</item>
+	    <item>16</item>
+	</string-array>
+		
+	<string name="default_precision">32</string>
+	<string name="default_fidelity">56</string>
+	
+</resources>
